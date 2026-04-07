@@ -66,8 +66,8 @@ export class Student {
   @OneToMany(() => CobroMensual, cobro => cobro.student)
   cobros: CobroMensual[];
 
-@OneToMany(() => Comment, comment => comment.student)
-comments: Comment[];
+  @OneToMany(() => Comment, comment => comment.student)
+  comments: Comment[];
 
   @OneToMany(() => StudentMovement, movement => movement.student)
   movements: StudentMovement[];

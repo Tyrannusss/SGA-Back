@@ -1,3 +1,4 @@
+import { Course } from 'src/courses/entities/course.entity';
 import { Student } from '../../students/entities/student.entity';
 import {
   Entity,
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('attendance')
@@ -24,12 +26,19 @@ export class Attendance {
   @Column({ type: 'date' })
   fecha: Date;
 
-  @Column({ type: 'boolean' })
-  presente: boolean;
+  @Column({
+    type: 'enum',
+    enum: ['presente', 'ausente', 'tardanza', 'justificado'],
+  })
+  estado: 'presente' | 'ausente' | 'tardanza' | 'justificado';
 
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => Course, (course) => course.enrollments)
+  @JoinColumn({ name: 'course_id' })
+  course: Course;
 }

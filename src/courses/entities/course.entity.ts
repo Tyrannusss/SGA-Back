@@ -1,4 +1,5 @@
 
+import { Attendance } from "src/attendance/entities/attendance.entity";
 import { Enrollment } from "../../enrollments/entities/enrollment.entity";
 import { Professor } from "../../professors/entities/professor.entity";
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
@@ -48,4 +49,6 @@ professor: Professor;
 @OneToMany(() => Enrollment, enrollment => enrollment.course)
 enrollments: Enrollment[];
 
+@OneToMany(() => Attendance, (attendance) => attendance.course)
+attendances: Attendance[];
 }
