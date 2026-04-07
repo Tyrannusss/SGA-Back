@@ -16,7 +16,7 @@ export class GradeService {
 
     let created = 0;
     let updated = 0;
-console.log("data",data)
+//console.log("data",data)
 for (const grade of grades) {
   const existing = await this.gradeRepository.findOne({
     where: {
@@ -30,7 +30,7 @@ for (const grade of grades) {
   if (existing) {
     //  UPDATE
     const update={...existing,calificacion:grade.calificacion}
-    console.log(update)
+    //console.log(update)
     existing.calificacion = grade.calificacion;
     await this.gradeRepository.save(update);
   } else {

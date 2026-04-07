@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CommentService } from './comment.service';
+import { Controller, Get, Post, Body, Param, UseGuards, Req, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentService } from './comment.service';
 
-@Controller('comment')
+@Controller('comments')
+@UseGuards(AuthGuard('jwt'))
 export class CommentController {
-  constructor(private readonly commentService: CommentService) {}
+  constructor(private readonly commentsService: CommentService) {}
 
-  @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.create(createCommentDto);
-  }
+@Post()
+@UseGuards(AuthGuard('jwt'))
+create(
+  @Body() dto: CreateCommentDto,
+  @Request() req
+) {
+  const professorId = req.user.id; // 👈 sale del JWT
 
-  @Get()
-  findAll() {
-    return this.commentService.findAll();
-  }
+  return this.commentsService.create(dto, professorId);
+}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  @Get('course/:courseId')
+  findByCourse(@Param('courseId') courseId: string) {
+    return this.commentsService.findByCourse(Number(courseId));
   }
 }

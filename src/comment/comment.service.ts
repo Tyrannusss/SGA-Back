@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
-  }
+  constructor(
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+  ) {}
 
-  findAll() {
-    return `This action returns all comment`;
-  }
+async create(dto: CreateCommentDto, professorId: number) {
+  const comment = this.commentRepository.create({
+    texto: dto.texto,
+    student: { id_student: dto.student_id },
+    course: { id_course: dto.course_id },
+    professor: { id_professor: professorId }, 
+  });
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
+  return this.commentRepository.save(comment);
+}
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async findByCourse(courseId: number) {
+    return this.commentRepository.find({
+      where: {
+        course: { id_course: courseId } as any,
+      },
+      relations: ['student', 'professor'],
+      order: {
+        created_at: 'DESC',
+      },
+    });
   }
 }

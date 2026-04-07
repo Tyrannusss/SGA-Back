@@ -1,8 +1,9 @@
 
-import { Attendance } from "src/attendance/entities/attendance.entity";
+import { Attendance } from "../../attendance/entities/attendance.entity";
 import { Enrollment } from "../../enrollments/entities/enrollment.entity";
 import { Professor } from "../../professors/entities/professor.entity";
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Comment } from "../../comment/entities/comment.entity";
 
 @Entity("courses")
 export class Course {
@@ -51,4 +52,7 @@ enrollments: Enrollment[];
 
 @OneToMany(() => Attendance, (attendance) => attendance.course)
 attendances: Attendance[];
+
+@OneToMany(() => Comment, (comment) => comment.course)
+comments: Comment[];
 }

@@ -1,3 +1,4 @@
+import { Course } from 'src/courses/entities/course.entity';
 import { Professor } from '../../professors/entities/professor.entity';
 import { Student } from '../../students/entities/student.entity';
 import {
@@ -24,13 +25,20 @@ export class Comment {
   @JoinColumn({ name: 'professor_id' })
   professor: Professor;
 
-  // 🔹 contenido del comentario
-  @Column({ type: 'text' })
-  comentario: string;
+  @Column({ type: 'datetime'})
+  fecha: Date;
+
+  @Column({ name: 'texto', type: 'text' })
+  texto: string;
 
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => Course, (course) => course.comments, { eager: true })
+  @JoinColumn({ name: 'course_id' })
+  course: Course;
+
 }
