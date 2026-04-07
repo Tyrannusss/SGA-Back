@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { GradeService } from './grade.service';
+import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
 import { CreateGradeDto } from './dto/create-grade.dto';
-import { UpdateGradeDto } from './dto/update-grade.dto';
+import { GradeService } from './grade.service';
 
-@Controller('grade')
+@Controller('grades')
 export class GradeController {
-  constructor(private readonly gradeService: GradeService) {}
+  constructor(private readonly gradesService: GradeService) {}
 
-  @Post()
-  create(@Body() createGradeDto: CreateGradeDto) {
-    return this.gradeService.create(createGradeDto);
+  //  Guardar / actualizar
+@Post()
+create(@Body() body: any) {
+  return this.gradesService.saveGrades(body); // ✅ TODO el payload
+}
+
+  // Obtener por curso
+  @Get('by-course/:courseId')
+  getByCourse(@Param('courseId') courseId: string) {
+    return this.gradesService.getGradesByCourse(Number(courseId));
   }
 
-  @Get()
-  findAll() {
-    return this.gradeService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gradeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGradeDto: UpdateGradeDto) {
-    return this.gradeService.update(+id, updateGradeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gradeService.remove(+id);
+  // Obtener por curso y fecha 
+  @Get('by-course/:courseId/date')
+  getByCourseAndDate(
+    @Param('courseId') courseId: string,
+    @Query('fecha') fecha: string,
+  ) {
+    return this.gradesService.getGradesByCourseAndDate(
+      Number(courseId),
+      fecha,
+    );
   }
 }
