@@ -9,7 +9,7 @@ export class GradeController {
   //  Guardar / actualizar
 @Post()
 create(@Body() body: any) {
-  return this.gradesService.saveGrades(body); // ✅ TODO el payload
+  return this.gradesService.saveGrades(body); 
 }
 
   // Obtener por curso
@@ -21,7 +21,7 @@ create(@Body() body: any) {
   // Obtener por curso y fecha 
   @Get('by-course/:courseId/date')
   getByCourseAndDate(
-    @Param('courseId') courseId: string,
+    @Param('courseId') courseId: string,  
     @Query('fecha') fecha: string,
   ) {
     return this.gradesService.getGradesByCourseAndDate(
