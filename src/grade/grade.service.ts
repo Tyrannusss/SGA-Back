@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Grade } from './entities/grade.entity';
-import { CreateGradeDto } from './dto/create-grade.dto';
 
 @Injectable()
 export class GradeService {
@@ -27,13 +26,15 @@ for (const grade of grades) {
       fecha,
     },
   });
-console.log("exciting",existing)
+
   if (existing) {
-    // 🔁 UPDATE
+    //  UPDATE
+    const update={...existing,calificacion:grade.calificacion}
+    console.log(update)
     existing.calificacion = grade.calificacion;
-    await this.gradeRepository.save(existing);
+    await this.gradeRepository.save(update);
   } else {
-    // ➕ INSERT
+    //  INSERT
     const newGrade = this.gradeRepository.create({
       student_id: grade.student_id,
       course_id: courseId,
@@ -56,7 +57,7 @@ console.log("exciting",existing)
           : 'Calificaciones actualizadas correctamente',
     };
   }
-  // 📥 GET por curso
+  //  GET por curso
   async getGradesByCourse(courseId: number) {
     const grades = await this.gradeRepository.find({
       where: { course_id: courseId },
@@ -87,7 +88,7 @@ console.log("exciting",existing)
       }, {} as any)
     );
 
-    // 🎯 PROMEDIO (escala 0-10)
+    //  PROMEDIO (escala 0-10)
     grouped.forEach((s: any) => {
       const total = s.evaluaciones.reduce(
         (sum, e) => sum + (e.calificacion / e.nota_maxima) * 10,
@@ -102,7 +103,7 @@ console.log("exciting",existing)
     return grouped;
   }
 
-  // 📥 GET por curso y fecha (útil para tu UI 🔥)
+  //  GET por curso y fecha
   async getGradesByCourseAndDate(courseId: number, fecha: string) {
     return this.gradeRepository.find({
       where: {
