@@ -9,4 +9,9 @@ export class StudentsController {
 getStudentsByCourse(@Param('courseId') courseId: string) {
   return this.studentsService.getStudentsWithAverageByCourse(Number(courseId));
 }
+
+@Get('full-info')
+getFullInfo() {
+  return this.studentsService.getStudentsFullInfo();
+}
 }

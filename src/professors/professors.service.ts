@@ -12,7 +12,7 @@ export class ProfessorsService {
     private professorRepository: Repository<Professor>,
 
     @InjectRepository(Course)
-    private courseRepository: Repository<Course>,
+    private courseRepository: Repository<Course>, 
   ) {}
 
   //🔹 cursos del profesor

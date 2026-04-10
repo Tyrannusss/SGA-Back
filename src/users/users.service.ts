@@ -50,4 +50,10 @@ async updatePassword(userId: number, newPassword: string) {
   return this.usersRepository.save(user);
 }
 
+  async getProfile(adminId: number) {
+    return this.usersRepository.findOne({
+      where: { id_user: adminId }
+    });
+
   }
+}

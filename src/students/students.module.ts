@@ -9,6 +9,7 @@ import { AttendanceModule } from './../attendance/attendance.module';
 import { GradeModule } from './../grade/grade.module';
 import { CobroMensualModule } from './../cobro-mensual/cobro-mensual.module';
 import { StudentMovementModule } from './../student-movement/student-movement.module';
+import { EstadoCobro } from './../cobro-mensual/entities/estado-cobro';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { StudentMovementModule } from './../student-movement/student-movement.mo
     forwardRef(() => StudentMovementModule), forwardRef(() => GradeModule), forwardRef(() => CobroMensualModule),
     TypeOrmModule.forFeature([
       Student,
+      EstadoCobro
     ]),
   ],
   controllers: [StudentsController],

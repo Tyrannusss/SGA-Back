@@ -7,7 +7,9 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  IntegerType,
 } from 'typeorm';
+import { EstadoCobro } from './estado-cobro';
 
 @Entity('cobros_mensuales')
 export class CobroMensual {
@@ -24,12 +26,14 @@ export class CobroMensual {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   monto: number;
 
-  @Column({ type: 'varchar', length: 50 })
-  estado: string; // pagado, pendiente, vencido
 
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
+
+@ManyToOne(() => EstadoCobro, estado => estado.cobroMensual)
+@JoinColumn({ name: 'estado_id' })
+estadocobro: EstadoCobro;
 }
