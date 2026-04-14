@@ -14,6 +14,7 @@ import { GradeModule } from './grade/grade.module';
 import { CobroMensualModule } from './cobro-mensual/cobro-mensual.module';
 import { CommentModule } from './comment/comment.module';
 import { StudentMovementModule } from './student-movement/student-movement.module';
+import { LiquidacionesModule } from './liquidaciones/liquidaciones.module';
 
 @Module({
   imports: [
@@ -54,6 +55,8 @@ import { StudentMovementModule } from './student-movement/student-movement.modul
     CommentModule,
 
     StudentMovementModule,
+
+    LiquidacionesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

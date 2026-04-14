@@ -23,4 +23,6 @@ create(
   findByCourse(@Param('courseId') courseId: string) {
     return this.commentsService.findByCourse(Number(courseId));
   }
+
+  
 }

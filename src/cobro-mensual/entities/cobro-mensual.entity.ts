@@ -8,8 +8,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   IntegerType,
+  OneToMany,
 } from 'typeorm';
-import { EstadoCobro } from './estado-cobro';
+import { EstadoCobro } from './estado-cobro.entity';
+import { Liquidacion } from '../../liquidaciones/entities/liquidacione.entity';
 
 @Entity('cobros_mensuales')
 export class CobroMensual {
@@ -36,4 +38,7 @@ export class CobroMensual {
 @ManyToOne(() => EstadoCobro, estado => estado.cobroMensual)
 @JoinColumn({ name: 'estado_id' })
 estadocobro: EstadoCobro;
+
+@OneToMany(() => Liquidacion, (l) => l.cobro)
+  liquidaciones: Liquidacion[];
 }

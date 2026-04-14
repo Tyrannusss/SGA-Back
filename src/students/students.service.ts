@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
 import { Repository } from 'typeorm';
+import { Comment } from 'src/comment/entities/comment.entity';
+
+
 
 @Injectable()
 export class StudentsService {
 
   constructor(
-
+@InjectRepository(Comment)
+private readonly commentsRepository: Repository<Comment>,
 
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
@@ -80,11 +84,110 @@ async getStudentsFullInfo() {
   'MAX(cobro.estado_id) AS estado_cobro', 
 ])
     .groupBy('student.id_student')
-    .addGroupBy('user.primer_nombre')
+    .addGroupBy('user.primer_nombre') 
     .addGroupBy('user.segundo_nombre')
     .addGroupBy('user.primer_apellido')
     .addGroupBy('user.segundo_apellido')
 
     .getRawMany();
+}
+async getStudentDetail(studentId: number) {
+  
+  const result = await this.studentRepository
+    .createQueryBuilder('student')
+
+    .leftJoin('student.user', 'user')
+    .leftJoin('student.enrollments', 'enrollment')
+    .leftJoin('enrollment.course', 'course')
+    .leftJoin('student.attendances', 'attendance')
+
+    // 🔥 SUBQUERY PARA GRADES
+.leftJoin(
+  qb => {
+    return qb
+      .select('g.student_id', 'student_id')
+      .addSelect(`
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'curso', course.course_code,
+            'tipo', g.tipo_evaluacion,
+            'calificacion', g.calificacion,
+            'fecha', g.fecha
+          )
+        )
+      `, 'evaluaciones')
+      .addSelect(`
+        AVG(g.calificacion / g.nota_maxima)
+      `, 'promedio_evaluaciones')
+      .from('grades', 'g')
+      .leftJoin('courses', 'course', 'course.id_course = g.course_id')
+      .groupBy('g.student_id');
+  },
+  'gradesAgg',
+  'gradesAgg.student_id = student.id_student'
+)
+
+    .select([
+  'student.id_student AS id_student',
+
+  `TRIM(CONCAT(
+    user.primer_nombre, ' ',
+    IFNULL(user.segundo_nombre, ''), ' ',
+    user.primer_apellido, ' ',
+    IFNULL(user.segundo_apellido, '')
+  )) AS nombre_completo`,
+
+  `CASE 
+    WHEN user.activo = 1 THEN 'Activo'
+    ELSE 'Inactivo'
+  END AS estado`,
+
+  'user.email AS email',
+  'user.email_secundario AS email_secundario',
+  'user.telefono AS telefono',
+
+  'GROUP_CONCAT(DISTINCT course.course_code) AS cursos',
+
+  `COALESCE(
+    SUM(CASE WHEN attendance.estado = 'presente' THEN 1 ELSE 0 END) 
+    / NULLIF(COUNT(attendance.id_attendance), 0),
+  0) AS promedio_asistencia`,
+
+  'gradesAgg.evaluaciones AS evaluaciones',
+  'COALESCE(gradesAgg.promedio_evaluaciones, 0) AS promedio_evaluaciones'
+])
+
+    .where('student.id_student = :id', { id: studentId })
+
+    .groupBy('student.id_student')
+    .addGroupBy('user.primer_nombre')
+    .addGroupBy('user.segundo_nombre')
+    .addGroupBy('user.primer_apellido')
+    .addGroupBy('user.segundo_apellido')
+    .addGroupBy('user.activo')
+    .addGroupBy('gradesAgg.evaluaciones')
+    .addGroupBy('gradesAgg.promedio_evaluaciones')
+
+    .getRawOne();
+
+  if (!result) {
+    throw new NotFoundException(`Estudiante con id ${studentId} no encontrado`);
+  }
+const comments = await this.commentsRepository
+  .createQueryBuilder('comment')
+  .leftJoin('comment.course', 'course')
+  .where('comment.student_id = :id', { id: studentId })
+  .orderBy('comment.created_at', 'DESC')
+  .getMany();
+
+  return {
+    ...result,
+    evaluaciones: result.evaluaciones
+      ? JSON.parse(result.evaluaciones)
+      : [],
+    promedio_asistencia: Number(result.promedio_asistencia) * 100,
+    promedio_evaluaciones: Number(result.promedio_evaluaciones) * 100,
+    comentarios: comments
+  };
 }
 }

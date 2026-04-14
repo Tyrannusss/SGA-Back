@@ -17,6 +17,7 @@ import { Grade } from '../../grade/entities/grade.entity';
 import { Attendance } from '../../attendance/entities/attendance.entity';
 import { Enrollment } from '../../enrollments/entities/enrollment.entity';
 import { Comment } from '../../comment/entities/comment.entity';
+import { Liquidacion } from '../../liquidaciones/entities/liquidacione.entity';
 
 @Entity('students')
 export class Student {
@@ -77,4 +78,8 @@ export class Student {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
+
+  @OneToMany(() => Liquidacion, (l) => l.student)
+liquidaciones: Liquidacion[];
+
 }

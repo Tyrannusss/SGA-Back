@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { StudentsService } from './students.service';
 
 @Controller('students')
@@ -14,4 +14,11 @@ getStudentsByCourse(@Param('courseId') courseId: string) {
 getFullInfo() {
   return this.studentsService.getStudentsFullInfo();
 }
+
+  @Get(':id/full-detail')
+  async getStudentDetail(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.studentsService.getStudentDetail(id);
+  }
 }
