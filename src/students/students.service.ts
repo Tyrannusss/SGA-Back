@@ -3,8 +3,9 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Comment } from 'src/comment/entities/comment.entity';
+import { User } from 'src/users/entities/user.entity';
 
 
 
@@ -17,6 +18,11 @@ private readonly commentsRepository: Repository<Comment>,
 
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
+
+        @InjectRepository(User)
+    private userRepository: Repository<User>,
+
+    private dataSource: DataSource,
   ) {}
   
   async getStudentsWithAverageByCourse(courseId: number) {
@@ -190,4 +196,51 @@ const comments = await this.commentsRepository
     comentarios: comments
   };
 }
+
+  async create(dto: CreateStudentDto) {
+    return await this.dataSource.transaction(async (manager) => {
+
+      // 1. USER
+      const user = manager.create(User, {
+        cedula: dto.cedula,
+        primer_nombre: dto.primer_nombre,
+        segundo_nombre: dto.segundo_nombre,
+        primer_apellido: dto.primer_apellido,
+        segundo_apellido: dto.segundo_apellido,
+        email: dto.email,
+        email_secundario: dto.email_secundario,
+        telefono: dto.telefono,
+        password_hash: dto.password_hash || 'default123',
+        role: 1,
+      });
+
+      const savedUser = await manager.save(user);
+
+      // 2. CALCULO
+      const base = dto.mensualidad_base || 0;
+      const iva = dto.tasa_iva ?? 0.19;
+      const total = base * (1 + iva);
+
+      // 3. STUDENT
+      const student = manager.create(Student, {
+        id_student: savedUser.id_user,
+        mes_matricula: dto.mes_matricula,
+        fecha_pago_dia: dto.fecha_pago_dia,
+        mensualidad_base: base,
+        tasa_iva: iva,
+        total_mensual: total,
+        fecha_inicio: dto.fecha_inicio,
+        fecha_salida: dto.fecha_salida,
+        no_contactar: dto.no_contactar,
+        correo_teams: dto.correo_teams,
+      });
+
+      await manager.save(student);
+
+      return {
+        message: 'Estudiante creado correctamente',
+        id: savedUser.id_user,
+      };
+    });
+  }
 }

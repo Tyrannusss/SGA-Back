@@ -10,8 +10,9 @@ import { GradeModule } from './../grade/grade.module';
 import { CobroMensualModule } from './../cobro-mensual/cobro-mensual.module';
 import { StudentMovementModule } from './../student-movement/student-movement.module';
 import { EstadoCobro } from '../cobro-mensual/entities/estado-cobro.entity';
-import { Comment } from 'src/comment/entities/comment.entity';
-import { CommentService } from 'src/comment/comment.service';
+import { Comment } from './../comment/entities/comment.entity';
+import { CommentService } from './../comment/comment.service';
+import { User } from './../users/entities/user.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { CommentService } from 'src/comment/comment.service';
     forwardRef(() => StudentMovementModule), forwardRef(() => GradeModule), forwardRef(() => CobroMensualModule),
     TypeOrmModule.forFeature([
       Student,
-      EstadoCobro,Comment
+      EstadoCobro,Comment,User
     ]),
   ],
   controllers: [StudentsController],

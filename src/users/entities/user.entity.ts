@@ -1,9 +1,12 @@
+import { Professor } from 'src/professors/entities/professor.entity';
+import { Student } from 'src/students/entities/student.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('users')
@@ -49,4 +52,10 @@ export class User {
 
   @Column({ type: 'int', nullable: true })
   role?: number;
+
+  @OneToOne(() => Student, (student) => student.user)
+student: Student;
+
+@OneToOne(() => Professor, (professor) => professor.user)
+professor: Professor;
 }

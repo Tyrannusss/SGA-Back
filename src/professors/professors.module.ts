@@ -8,11 +8,12 @@ import { Area } from './entities/area.entity';
 import { Puesto } from './entities/puesto.entity';
 import { EstadoLaboral } from './entities/estado-laboral.entity';
 import { CommentModule } from './../comment/comment.module';
+import { User } from './../users/entities/user.entity';
 
 @Module({
   imports: [
     forwardRef(() => CommentModule),
-    TypeOrmModule.forFeature([Professor,Course,Area,Puesto,EstadoLaboral]),
+    TypeOrmModule.forFeature([Professor,Course,Area,Puesto,EstadoLaboral,User]),
   ],
   controllers: [ProfessorsController],
   providers: [ProfessorsService],
