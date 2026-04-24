@@ -8,39 +8,37 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { Course } from './entities/course.entity';
-
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(private readonly courseService: CoursesService) {}
 
   // 🔹 GET /courses
   @Get()
   findAll() {
-    return this.coursesService.findAll();
+    return this.courseService.findAll();
   }
 
   // 🔹 GET /courses/:id
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.coursesService.findOne(+id);
+    return this.courseService.findOne(+id);
   }
 
   // 🔹 POST /courses
   @Post()
-  create(@Body() body: Partial<Course>) {
-    return this.coursesService.create(body);
+  create(@Body() body: any) {
+    return this.courseService.create(body);
   }
 
   // 🔹 PATCH /courses/:id
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: Partial<Course>) {
-    return this.coursesService.update(+id, body);
+  update(@Param('id') id: string, @Body() body: any) {
+    return this.courseService.update(+id, body);
   }
 
   // 🔹 DELETE /courses/:id
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.coursesService.remove(+id);
+    return this.courseService.remove(+id);
   }
 }
